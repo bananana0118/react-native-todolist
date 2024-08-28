@@ -6,7 +6,7 @@ import ThemeView from "@/components/common/ThemeView";
 import { Todo, TodoTable } from "@/constants/Dummy";
 import { Todos } from "@/components/todo/Todos";
 import { readDataTodoTable } from "@/apis/todos";
-import { getTodayDateFormatted } from "@/app/utils/time";
+import { getTodayDateFormatted } from "@/utils/time";
 
 export default function Index() {
     const { theme, setTheme } = useTheme();

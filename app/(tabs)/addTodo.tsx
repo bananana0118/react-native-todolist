@@ -9,7 +9,7 @@ import { useCallback, useEffect, useState } from "react";
 import { TodoTable } from "@/constants/Dummy";
 import { Todos } from "@/components/todo/Todos";
 import Input from "@/components/input/Input";
-import { keyExtractor } from "../utils/util";
+import { keyExtractor } from "../../utils/util";
 import { readDataTodoTable } from "@/apis/todos";
 import EmptyTodoList from "@/components/todo/EmptyTodoList";
 

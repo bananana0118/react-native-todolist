@@ -1,7 +1,7 @@
 import React from "react";
 import { ThemeColors, useTheme } from "../providers/ThemeProvider";
 import { StyleSheet, Text, View } from "react-native";
-import { getFormattedDate } from "@/app/utils/time";
+import { getFormattedDate } from "@/utils/time";
 
 export default function EmptyTodoList() {
     const { theme, setTheme } = useTheme();

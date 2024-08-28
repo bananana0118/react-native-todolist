@@ -12,13 +12,13 @@ import {
     useTheme,
 } from "../providers/ThemeProvider";
 import TodoItem from "./TodoItem";
-import { keyExtractor } from "@/app/utils/util";
+import { keyExtractor } from "@/utils/util";
 import { Todo, TodoTable } from "@/constants/Dummy";
 import React, { useState } from "react";
 import DateTimePicker, {
     DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
-import { getDatetoString } from "@/app/utils/time";
+import { getDatetoString } from "@/utils/time";
 
 export const Todos = ({ todoTable }: { todoTable: TodoTable }) => {
     const { theme, setTheme } = useTheme();

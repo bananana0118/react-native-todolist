@@ -9,7 +9,7 @@ import {
     View,
 } from "react-native";
 import { addDataTodo } from "@/apis/todos";
-import { getTodayDateFormatted } from "@/app/utils/time";
+import { getTodayDateFormatted } from "@/utils/time";
 
 type Props = {
     onPress: () => Promise<void>;

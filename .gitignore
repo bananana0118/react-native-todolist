@@ -19,3 +19,4 @@ package-lock.json
 expo-env.d.ts
 .env
 # @end expo-cli
+google-services.json

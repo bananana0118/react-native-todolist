@@ -1,4 +1,4 @@
-import { getTodayDateFormatted } from "@/app/utils/time";
+import { getTodayDateFormatted } from "@/utils/time";
 import { Colors } from "@/constants/Colors";
 import {
     DateContext,
