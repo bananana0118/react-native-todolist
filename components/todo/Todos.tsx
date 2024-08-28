@@ -5,49 +5,65 @@ import {
     StyleSheet,
     Text,
     ListRenderItem,
-    TouchableWithoutFeedback,
 } from "react-native";
-import { ThemeColors, useTheme } from "../providers/ThemeProvider";
+import {
+    ThemeColors,
+    useSelectedDate,
+    useTheme,
+} from "../providers/ThemeProvider";
 import TodoItem from "./TodoItem";
-import { getFormattedDate } from "@/app/utils/time";
 import { keyExtractor } from "@/app/utils/util";
-import IconButton from "../button/IconButton";
 import { Todo, TodoTable } from "@/constants/Dummy";
-import React from "react";
+import React, { useState } from "react";
+import DateTimePicker, {
+    DateTimePickerEvent,
+} from "@react-native-community/datetimepicker";
+import { getDatetoString } from "@/app/utils/time";
 
 export const Todos = ({ todoTable }: { todoTable: TodoTable }) => {
     const { theme, setTheme } = useTheme();
+    const { date, setDate } = useSelectedDate();
     const styles = createStyles(theme);
-    console.log("todoTable  " + todoTable);
+    const [show, setShow] = useState(false);
+
     const renderTodoItem: ListRenderItem<Todo> = ({ item, index }) => {
         return <TodoItem item={item} index={index}></TodoItem>;
     };
 
-    const todayDate = getFormattedDate(new Date());
+    const onChangeDateHandler = (event: DateTimePickerEvent, date?: Date) => {
+        setShow(false);
+        console.log(date);
+        if (date) {
+            const selectedDate = getDatetoString(date);
 
-    // const filteredTodoData = todoData.filter((item) => item.date == todayDate);
-    // const sortedTodoData = todoData
-    //     ? todoData.sort((a, b) => {
-    //           if (a.completed === false && b.completed === true) {
-    //               return -1;
-    //           } else if (a.completed === true && b.completed === false) {
-    //               return 1;
-    //           } else {
-    //               return 0;
-    //           }
-    //       })
-    //     : [];
+            setDate(selectedDate);
+        }
+    };
+    const sortedTodoData = todoTable?.todos
+        ? todoTable.todos.sort((a, b) => {
+              if (a.completed === false && b.completed === true) {
+                  return -1;
+              } else if (a.completed === true && b.completed === false) {
+                  return 1;
+              } else {
+                  return 0;
+              }
+          })
+        : [];
 
+    const onClickCalendar = () => {
+        setShow((pre) => !pre);
+    };
+
+    //달력바뀌면 쿼리 날리는 걸로 바꾸셈
+    //todo addTodo화면은 화면안바뀌게 
     return (
         <View style={{ ...styles.todoBox }}>
             <View style={{ ...styles.header }}>
-                <Text style={{ ...styles.headerText }}>{todayDate}</Text>
-                {/* <IconButton
-                    iconName="add"
-                    item={sortedTodoData[0]}
-                ></IconButton> */}
+                <Text style={{ ...styles.headerText }}>{date}</Text>
+                <Button onPress={onClickCalendar} title="달력"></Button>
             </View>
-            {todoTable?.todos.length >0 && (
+            {sortedTodoData?.length > 0 && (
                 <FlatList
                     style={{ ...styles.content }}
                     onScroll={(event) =>
@@ -58,13 +74,20 @@ export const Todos = ({ todoTable }: { todoTable: TodoTable }) => {
                     }
                     keyboardShouldPersistTaps={"handled"}
                     scrollEnabled={true}
-                    data={todoTable.todos}
+                    data={sortedTodoData}
                     renderItem={renderTodoItem}
                     keyExtractor={keyExtractor}
                     ItemSeparatorComponent={() => (
                         <View style={{ height: 20 }} />
                     )}
                 ></FlatList>
+            )}
+            {show && (
+                <DateTimePicker
+                    value={new Date(todoTable.date)}
+                    mode="date"
+                    onChange={onChangeDateHandler}
+                ></DateTimePicker>
             )}
         </View>
     );

@@ -1,5 +1,10 @@
+import { getTodayDateFormatted } from "@/app/utils/time";
 import { Colors } from "@/constants/Colors";
-import { ThemeContext } from "@/contexts/ThemeContext";
+import {
+    DateContext,
+    DateContextType,
+    ThemeContext,
+} from "@/contexts/ThemeContext";
 import { useContext, useState } from "react";
 type Merge<T> = {
     [K in keyof T]: T[K];
@@ -17,7 +22,6 @@ export type ThemeColors = Merge<
     UnionToIntersection<(typeof Colors)[keyof typeof Colors]>
 >;
 
-
 interface ThemeContextType {
     theme: ThemeColors;
     setTheme: (themeName: keyof typeof Colors) => void;
@@ -27,7 +31,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
     children,
 }) => {
     const [themeName, setThemeName] = useState<keyof typeof Colors>("pastel");
-
+    const [date, setDate] = useState(getTodayDateFormatted());
     const setTheme = (themeName: keyof typeof Colors): void => {
         setThemeName(themeName);
     };
@@ -35,9 +39,19 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
 
     return (
         <ThemeContext.Provider value={{ theme, setTheme }}>
-            {children}
+            <DateContext.Provider value={{ date, setDate }}>
+                {children}
+            </DateContext.Provider>
         </ThemeContext.Provider>
     );
+};
+
+export const useSelectedDate = (): DateContextType => {
+    const context = useContext(DateContext);
+    if (!context) {
+        throw new Error("useDate must be used within a DateProvider");
+    }
+    return context;
 };
 
 export const useTheme = (): ThemeContextType => {

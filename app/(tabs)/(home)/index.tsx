@@ -1,21 +1,30 @@
 import { ThemeColors, useTheme } from "@/components/providers/ThemeProvider";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 
 import ThemeView from "@/components/common/ThemeView";
-import { Todo } from "@/constants/Dummy";
+import { Todo, TodoTable } from "@/constants/Dummy";
 import { Todos } from "@/components/todo/Todos";
-
+import { readDataTodoTable } from "@/apis/todos";
+import { getTodayDateFormatted } from "@/app/utils/time";
 
 export default function Index() {
     const { theme, setTheme } = useTheme();
     const styles = createStyles(theme);
+    const [todoTable, setTodoTable] = useState<TodoTable[]>([]);
+    const [date, setDate] = useState(getTodayDateFormatted());
 
-    const [todoData, setTodoData] = useState<Todo[]>([]);
+    const LoadDataTodo = useCallback(async () => {
+        const TodoTable = await readDataTodoTable({ date });
+        setTodoTable(TodoTable);
+    }, []);
+    useEffect(() => {
+        LoadDataTodo();
+    }, []);
 
     return (
         <ThemeView>
-            <Todos todoData={todoData}></Todos>
+            {todoTable&&<Todos todoTable={todoTable[0]}></Todos>}
         </ThemeView>
     );
 }

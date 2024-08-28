@@ -9,12 +9,14 @@ import {
     View,
 } from "react-native";
 import { addDataTodo } from "@/apis/todos";
+import { getTodayDateFormatted } from "@/app/utils/time";
 
 type Props = {
     onPress: () => Promise<void>;
+    date: string;
 };
 
-export default function Input({ onPress: onPressHandler }: Props) {
+export default function Input({ onPress: onPressHandler, date }: Props) {
     const [inputValue, setInputValue] = useState("");
     const { theme, setTheme } = useTheme();
 
@@ -26,7 +28,7 @@ export default function Input({ onPress: onPressHandler }: Props) {
     const onAddTodoHandler = useCallback(async () => {
         const errorCode = await addDataTodo({
             task: inputValue,
-            date: "2024-08-28",
+            date: date,
         });
         if (errorCode === 200) {
             setInputValue("");

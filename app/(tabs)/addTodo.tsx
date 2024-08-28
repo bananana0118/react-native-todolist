@@ -1,8 +1,12 @@
-import { ThemeColors, useTheme } from "@/components/providers/ThemeProvider";
+import {
+    ThemeColors,
+    useSelectedDate,
+    useTheme,
+} from "@/components/providers/ThemeProvider";
 import { FlatList, ListRenderItem, StyleSheet } from "react-native";
 import ThemeView from "@/components/common/ThemeView";
 import { useCallback, useEffect, useState } from "react";
-import { Todo, TodoTable } from "@/constants/Dummy";
+import { TodoTable } from "@/constants/Dummy";
 import { Todos } from "@/components/todo/Todos";
 import Input from "@/components/input/Input";
 import { keyExtractor } from "../utils/util";
@@ -11,19 +15,18 @@ import EmptyTodoList from "@/components/todo/EmptyTodoList";
 
 export default function AddTodo() {
     const { theme, setTheme } = useTheme();
+    const { date, setDate } = useSelectedDate();
     const [todoTable, setTodoTable] = useState<TodoTable[]>([]);
 
     const styles = createStyles(theme);
 
-    //일단 오늘 날짜 넣어
-
+    //나중엔 특정 날짜 하나만 불러오도록
     const LoadDataTodo = useCallback(async () => {
-        const TodoTable = await readDataTodoTable({ date: "2024-08-28" });
+        const TodoTable = await readDataTodoTable({ date });
         setTodoTable(TodoTable);
     }, []);
 
     const renderTodoTable: ListRenderItem<TodoTable> = ({ item, index }) => {
-        console.log("item"+item)
         return <Todos todoTable={item}></Todos>;
     };
 
@@ -32,7 +35,7 @@ export default function AddTodo() {
     }, []);
     return (
         <ThemeView>
-            <Input onPress={LoadDataTodo}></Input>
+            <Input onPress={LoadDataTodo} date={date}></Input>
             <FlatList
                 data={todoTable}
                 keyExtractor={keyExtractor}
