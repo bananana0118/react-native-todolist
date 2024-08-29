@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import { addDataTodo } from "@/apis/todos";
 import { getTodayDateFormatted } from "@/utils/time";
-
 type Props = {
     onPress: () => Promise<void>;
     date: string;
@@ -59,6 +58,7 @@ export default function Input({ onPress: onPressHandler, date }: Props) {
 const createStyles = (theme: ThemeColors) =>
     StyleSheet.create({
         inputBox: {
+            width:"100%",
             flexDirection: "row",
             marginBottom: 10,
         },

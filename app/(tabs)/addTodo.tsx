@@ -9,9 +9,7 @@ import { useCallback, useEffect, useState } from "react";
 import { TodoTable } from "@/constants/Dummy";
 import { Todos } from "@/components/todo/Todos";
 import Input from "@/components/input/Input";
-import { keyExtractor } from "../../utils/util";
 import { readDataTodoTable } from "@/apis/todos";
-import EmptyTodoList from "@/components/todo/EmptyTodoList";
 
 export default function AddTodo() {
     const { theme, setTheme } = useTheme();
@@ -24,26 +22,31 @@ export default function AddTodo() {
     const LoadDataTodo = useCallback(async () => {
         const TodoTable = await readDataTodoTable({ date });
         setTodoTable(TodoTable);
-    }, []);
+        console.log(TodoTable)
+    }, [date]);
 
-    const renderTodoTable: ListRenderItem<TodoTable> = ({ item, index }) => {
-        return <Todos todoTable={item}></Todos>;
-    };
+    // const renderTodoTable: ListRenderItem<TodoTable> = ({ item, index }) => {
+    //     return <Todos todoTable={item}></Todos>;
+    // };
 
+    console.log("호출");
     useEffect(() => {
         LoadDataTodo();
-    }, []);
+    }, [LoadDataTodo]);
+
     return (
         <ThemeView>
             <Input onPress={LoadDataTodo} date={date}></Input>
-            <FlatList
+            <Todos todoTable={todoTable}></Todos>
+
+            {/* <FlatList
                 data={todoTable}
                 keyExtractor={keyExtractor}
                 renderItem={renderTodoTable}
                 style={{ width: "100%" }}
                 contentContainerStyle={{ flexGrow: 1 }}
                 ListEmptyComponent={EmptyTodoList}
-            ></FlatList>
+            ></FlatList> */}
         </ThemeView>
     );
 }

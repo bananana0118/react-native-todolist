@@ -2,11 +2,10 @@ import { Todo, TodoTable } from "@/constants/Dummy";
 import { dbCollections } from "@/firebase";
 import {
     addDoc,
-    doc,
-    getDoc,
     getDocs,
+    limit,
+    orderBy,
     query,
-    setDoc,
     updateDoc,
     where,
 } from "firebase/firestore";
@@ -68,28 +67,49 @@ type ReturnTodosType = Promise<TodoTable[]>;
 
 export const readDataTodoTable = async ({
     date,
+    beforeCount = 1
 }: {
     date: string;
+    beforeCount?: number;
 }): ReturnTodosType => {
     try {
         // 'todos' 콜렉션 참조
-        console.log(date);
-        const q = query(dbCollections.todoTable, where("date", "==", date));
+        console.log("dasdas", date);
+        const q = query(
+            dbCollections.todoTable,
+            where("date", "<", date),
+            orderBy("date", "desc")
+        );
 
         const querySnapShot = await getDocs(q);
-
+        console.log(querySnapShot.docs[0]);
         if (querySnapShot.empty) {
+            console.log("비어있어");
             return [];
-        } else {
+        } else if (querySnapShot.docs.length == 1) {
+            console.log("여기냐?");
             const existingDoc = querySnapShot.docs[0];
-
             const returnData = {
                 id: existingDoc.id,
                 date: existingDoc.data().date,
                 todos: existingDoc.data().todos,
             };
-
             return [returnData];
+        } else {
+            const existingDocs = querySnapShot.docs;
+            const returnData = [];
+            const loopLength = Math.min(existingDocs.length, beforeCount);
+
+            for (let i = 0; i < loopLength; i++) {
+                returnData.push({
+                    id: existingDocs[i].id,
+                    ...existingDocs[i].data(),
+                });
+            }
+            console.log("hit");
+            console.log(returnData);
+
+            return returnData;
         }
     } catch (error) {
         console.error("error fetching all todos : ", error);

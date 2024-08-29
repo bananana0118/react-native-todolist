@@ -1,6 +1,10 @@
-import { ThemeColors, useTheme } from "@/components/providers/ThemeProvider";
+import {
+    ThemeColors,
+    useSelectedDate,
+    useTheme,
+} from "@/components/providers/ThemeProvider";
 import { useCallback, useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 import ThemeView from "@/components/common/ThemeView";
 import { Todo, TodoTable } from "@/constants/Dummy";
@@ -12,19 +16,23 @@ export default function Index() {
     const { theme, setTheme } = useTheme();
     const styles = createStyles(theme);
     const [todoTable, setTodoTable] = useState<TodoTable[]>([]);
-    const [date, setDate] = useState(getTodayDateFormatted());
+    const { date, setDate } = useSelectedDate();
 
     const LoadDataTodo = useCallback(async () => {
-        const TodoTable = await readDataTodoTable({ date });
+        console.log("input date", date);
+        const TodoTable = await readDataTodoTable({ date, beforeCount: 10 });
         setTodoTable(TodoTable);
-    }, []);
+        console.log(TodoTable);
+    }, [date]);
+
     useEffect(() => {
         LoadDataTodo();
-    }, []);
+    }, [LoadDataTodo]);
 
     return (
         <ThemeView>
-            {todoTable&&<Todos todoTable={todoTable[0]}></Todos>}
+            <Text>으악</Text>
+            <Todos todoTable={todoTable}></Todos>
         </ThemeView>
     );
 }

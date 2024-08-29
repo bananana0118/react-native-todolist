@@ -14,18 +14,20 @@ import {
 import TodoItem from "./TodoItem";
 import { keyExtractor } from "@/utils/util";
 import { Todo, TodoTable } from "@/constants/Dummy";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DateTimePicker, {
     DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import { getDatetoString } from "@/utils/time";
+import EmptyTodoList from "./EmptyTodoList";
+import TodoSkeleton from "./TodoSkeleton";
 
-export const Todos = ({ todoTable }: { todoTable: TodoTable }) => {
-    const { theme, setTheme } = useTheme();
+export const Todos = ({ todoTable }: { todoTable: TodoTable[] }) => {
     const { date, setDate } = useSelectedDate();
+    const { theme, setTheme } = useTheme();
     const styles = createStyles(theme);
     const [show, setShow] = useState(false);
-
+    const [isLoading, setIsLoading] = useState(true);
     const renderTodoItem: ListRenderItem<Todo> = ({ item, index }) => {
         return <TodoItem item={item} index={index}></TodoItem>;
     };
@@ -39,32 +41,44 @@ export const Todos = ({ todoTable }: { todoTable: TodoTable }) => {
             setDate(selectedDate);
         }
     };
-    const sortedTodoData = todoTable?.todos
-        ? todoTable.todos.sort((a, b) => {
-              if (a.completed === false && b.completed === true) {
-                  return -1;
-              } else if (a.completed === true && b.completed === false) {
-                  return 1;
-              } else {
-                  return 0;
-              }
-          })
-        : [];
+    const sortedTodoData = (todoTable: TodoTable) =>
+        todoTable?.todos
+            ? todoTable.todos.sort((a, b) => {
+                  if (a.completed === false && b.completed === true) {
+                      return -1;
+                  } else if (a.completed === true && b.completed === false) {
+                      return 1;
+                  } else {
+                      return 0;
+                  }
+              })
+            : [];
 
     const onClickCalendar = () => {
         setShow((pre) => !pre);
     };
 
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsLoading(false);
+        }, 1000);
+
+        return () => clearTimeout(timer); //컴포넌트 언마운트시 클리어
+    }, []);
+
     //달력바뀌면 쿼리 날리는 걸로 바꾸셈
-    //todo addTodo화면은 화면안바뀌게 
+    if (isLoading) return <TodoSkeleton></TodoSkeleton>;
+    if (todoTable.length === 0) return <EmptyTodoList></EmptyTodoList>;
+
     return (
         <View style={{ ...styles.todoBox }}>
             <View style={{ ...styles.header }}>
                 <Text style={{ ...styles.headerText }}>{date}</Text>
                 <Button onPress={onClickCalendar} title="달력"></Button>
             </View>
-            {sortedTodoData?.length > 0 && (
+            {todoTable.map((todoList) => (
                 <FlatList
+                    key={todoList.id}
                     style={{ ...styles.content }}
                     onScroll={(event) =>
                         console.log(
@@ -74,17 +88,17 @@ export const Todos = ({ todoTable }: { todoTable: TodoTable }) => {
                     }
                     keyboardShouldPersistTaps={"handled"}
                     scrollEnabled={true}
-                    data={sortedTodoData}
+                    data={sortedTodoData(todoList)}
                     renderItem={renderTodoItem}
                     keyExtractor={keyExtractor}
                     ItemSeparatorComponent={() => (
                         <View style={{ height: 20 }} />
                     )}
                 ></FlatList>
-            )}
+            ))}
             {show && (
                 <DateTimePicker
-                    value={new Date(todoTable.date)}
+                    value={new Date(date)}
                     mode="date"
                     onChange={onChangeDateHandler}
                 ></DateTimePicker>
@@ -98,8 +112,6 @@ export default React.memo(Todos);
 const createStyles = (theme: ThemeColors) =>
     StyleSheet.create({
         todoBox: {
-            flex: 1,
-            flexGrow: 1,
             width: "100%",
             borderRadius: 8,
             overflow: "hidden",
